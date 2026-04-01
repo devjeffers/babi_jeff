@@ -14,3 +14,10 @@ h1 {
     border: 1px solid #ccc;
     border-radius: 10px;
 }
+
+#carrinho {
+  background: #ffffffd9; margin: 20px auto; width: 80%;
+  padding: 10px;
+  border-radius: 10px;
+  
+}
