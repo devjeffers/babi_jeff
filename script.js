@@ -40,15 +40,37 @@ let total = 0;
     }
 
     function adicionar(id, nome, preco) {
-        carrinho.push({ id, nome, preco });
+
+        const itemExistente = carrinho.find(item => item.id === id);
+
+        if (itemExistente) {
+            itemExistente.quantidade += 1;
         
-        total += preco;
+        } else {
+            carrinho.push({ 
+                id, 
+                nome, 
+                preco, 
+                quantidade: 1 
+            });
+        }
+        
+        calcularTotal();
+        atualizarCarrinho(); //novo
+        salvarCarrinho();
+
+        alert("Adicionado ao carrinho!");
+    }
+
+    function calcularTotal() {
+        total = 0;
+        carrinho.forEach(item => {
+            total += item.preco * item.quantidade;
+        });
 
         atualizarTotal();
-        atualizarCarrinho(); //novo
-        
-        alert("Adicionado ao carrinho!");
-}
+    }
+
     function removerItem(index) {
         total -= carrinho[index].preco;
         
@@ -56,6 +78,7 @@ let total = 0;
 
         atualizarTotal();
         atualizarCarrinho();
+        salvarCarrinho();
     }
     function atualizarCarrinho() {
         const div = document.getElementById("carrinho");
@@ -64,12 +87,56 @@ let total = 0;
 
         carrinho.forEach((item, index) => {
             div.innerHTML += `
-                <p>
-                ${item.nome} - R$ ${item.preco.toFixed(2)}
+                <div>
+                    <strong>${item.nome}</strong><br>
+                    
+                    <button onclick="diminuir(${index})">➖</button>
+                    ${item.quantidade}
+
+                    <button onclick="aumentar(${index})">➕</button>
+                  
+                    <br>
+
+                    R$ ${(item.preco * item.quantidade).toFixed(2)}
+
                 <button onclick="removerItem(${index})">❌</button>
-                </p>
+
+                <hr>
+
+                </div>
             `;
         });
+    }
+
+    function aumentar(index) {
+        carrinho[index].quantidade += 1;
+        calcularTotal();
+        atualizarCarrinho();
+        salvarCarrinho();
+    }
+
+    function diminuir(index) {
+        if (carrinho[index].quantidade > 1) {
+            carrinho[index].quantidade -= 1;
+        } else {
+            carrinho.splice(index, 1);
+        }
+        calcularTotal();
+        atualizarCarrinho();
+        salvarCarrinho
+    }
+
+    function salvarCarrinho() {
+        localStorage.setItem("carrinho", JSON.stringify(carrinho));
+    }
+
+    function carregarCarrinhoSalvo() {
+        const dados = localStorage.getItem("carrinho");
+        if (dados) {
+            carrinho = JSON.parse(dados);
+            calcularTotal();
+            atualizarCarrinho();
+        }
     }
 
     function atualizarTotal() {
@@ -103,7 +170,7 @@ let total = 0;
         }
 
         carrinho.forEach((item) => {
-            mensagem += "- " + item.nome + " (R$ " + item.preco.toFixed(2) + ")\n";
+            mensagem += `- ${item.nome} x${item.quantidade} (R$ ${(item.preco * item.quantidade).toFixed(2)}\n`;
         });
 
         mensagem += "\n💰 Pagamento: " + pagamento;
@@ -160,6 +227,7 @@ let total = 0;
                 total = 0;
                 atualizarTotal();
                 atualizarCarrinho(); // importante para manter a ordem correta do estoque
+                localStorage.removeItem("carrinho");
             })
             .then(() => {
                 console.log("Estoque atualizado com sucesso!");
@@ -171,3 +239,4 @@ let total = 0;
     }
 
     carregarprodutos();
+    carregarCarrinhoSalvo();

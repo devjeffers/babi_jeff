@@ -1,3 +1,5 @@
+console.log("Firebase carregado com sucesso!");
+
 const firebaseConfig = {
   apiKey: "AIzaSyDBfBls41KjIiWB37dxi3hmzLV7OwU1XTU",
   authDomain: "babi-jeff.firebaseapp.com",
