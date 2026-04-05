@@ -7,34 +7,35 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>🍰Babi&Jeff Bolos e Doces</h1>
+    <h1 class="titulo">🍰Babi&Jeff Bolos e Doces</h1>
 
     <h2>Cardápio do Dia</h2>
 
-    <div id="produtos"></div>
+    <div id="produtos" class="grid"></div>
 
+    <div class="formulario">
     <h2>📋🖋Finalizar Pedido</h2>
 
     <input type="text" id="nome" placeholder="Digite seu nome"><br><br>
     <input type="text" id="celular" placeholder="Digite seu celular"><br>
     <input type="text" id="endereco" placeholder="Digite seu endereço"><br><br>
-
+    
     <select id="pagamento">
         <option value="">Selecione a forma de pagamento</option>
         <option value="pix">PIX</option>
         <option value="dinheiro">Dinheiro</option>
-        <option value="cartao">Cartão de Crédito/Débito</option>
     </select><br><br>
-
+    </div>
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <script src="firebase.js"></script>
 
     <h2>🛒 Carrinho</h2>
-    <div id="carrinho"></div>
+    <div id="carrinho" class="carrinho"></div>
 
-    <h2 id="total">Total: R$ 0.00</h2>
+    <h2 id="total" class="total">Total: R$ 0.00</h2>
 
     <button onclick="finalizarPedido()">Finalizar Pedido</button>
 

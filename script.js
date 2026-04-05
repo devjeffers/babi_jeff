@@ -87,7 +87,7 @@ let total = 0;
 
         carrinho.forEach((item, index) => {
             div.innerHTML += `
-                <div>
+                <div style="margin-bottom: 10px;">
                     <strong>${item.nome}</strong><br>
                     
                     <button onclick="diminuir(${index})">➖</button>
@@ -193,6 +193,7 @@ let total = 0;
             endereco: endereco,
             pagamento: pagamento,
             itens: carrinho,
+            status: "Pendente",//novo campo para status do pedido
             criadoEm: new Date()
         }).then(() => {
             console.log("Pedido salvo no Firestore!");
