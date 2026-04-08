@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background: #fef6f2;
+    background: linear-gradient(135deg, #fef6f2, #f8f9fa);
     border-radius: 15px;
     margin: 0;
     padding: 10px;
@@ -63,6 +63,11 @@ body {
     font-weight: bold;
     color: #e74c3c;
 }
+#total {
+    text-align: center;
+    margin-top: 10px;
+    font-size:20px;
+}
 
 /* Botões */
 button {
@@ -98,5 +103,71 @@ h1 {
   padding: 15px;
   border-radius: 10px;
   border: 2px solid #e67e22;
-  
+}
+
+.carrinho-box {
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.pedido-box {
+    width: 100%;
+    background: #ffffff;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 400px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.pedido-box h2 {
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.pedido-box input, 
+.pedido-box select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.pedido-box input:focus,
+.pedido-box select:focus {
+    border-color: #e67e22;
+    outline: none;
+}
+
+.btn-finalizar {
+    background: #e67e22;
+    color: white;
+    font-size: 16px;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    transition: 0.3s;
+}
+.btn-finalizar:hover {
+    background: #218838;
+    transform: scale(1.03);
+}
+
+.container-principal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 20px;
+    
 }

@@ -1,4 +1,4 @@
-let carrinho = [];
+let listaCarrinho = [];
 
 let total = 0;
 
@@ -26,7 +26,7 @@ let total = 0;
                 </p>
                 <p>Preço: R$ ${produto.preco.toFixed(2)}</p>
                 ${produto.estoque > 0 
-                ? `<button onclick="adicionar('${id}', '${produto.nome}', ${produto.preco})">
+                ? `<button onclick="adicionar('${id}', '${produto.nome}', '${produto.preco}', ${produto.estoque})">
                         Adicionar
                     </button>`
                 : `<button disabled style="background: gray;">
@@ -39,19 +39,26 @@ let total = 0;
         });
     }
 
-    function adicionar(id, nome, preco) {
+    function adicionar(id, nome, preco, estoque) {
 
-        const itemExistente = carrinho.find(item => item.id === id);
+        const itemExistente = listaCarrinho.find(item => item.id === id);
 
         if (itemExistente) {
+            if (itemExistente.quantidade >= estoque) {
+            alert("❌Quantidade máxima disponível atingida!")
+                return;
+            }
+
             itemExistente.quantidade += 1;
-        
+
         } else {
-            carrinho.push({ 
+                listaCarrinho.push({ 
                 id, 
                 nome, 
                 preco, 
-                quantidade: 1 
+                quantidade: 1,
+                estoque //novo
+         
             });
         }
         
@@ -64,7 +71,7 @@ let total = 0;
 
     function calcularTotal() {
         total = 0;
-        carrinho.forEach(item => {
+        listaCarrinho.forEach(item => {
             total += item.preco * item.quantidade;
         });
 
@@ -72,20 +79,20 @@ let total = 0;
     }
 
     function removerItem(index) {
-        total -= carrinho[index].preco;
+        total -= listaCarrinho[index].preco * listaCarrinho[index].quantidade;
         
-        carrinho.splice(index, 1);
+        listaCarrinho.splice(index, 1);
 
         atualizarTotal();
         atualizarCarrinho();
         salvarCarrinho();
     }
     function atualizarCarrinho() {
-        const div = document.getElementById("carrinho");
+        const div = document.getElementById("lista-carrinho");
         
         div.innerHTML = "";
 
-        carrinho.forEach((item, index) => {
+        listaCarrinho.forEach((item, index) => {
             div.innerHTML += `
                 <div style="margin-bottom: 10px;">
                     <strong>${item.nome}</strong><br>
@@ -109,33 +116,58 @@ let total = 0;
     }
 
     function aumentar(index) {
-        carrinho[index].quantidade += 1;
+        const item = listaCarrinho[index];
+
+        db.collection("produtos").doc(item.id).get().then((doc) => {
+            const estoqueAtual = doc.data().estoque;
+            
+        if (item.quantidade >= item.estoque) {
+            alert("❌Quantidade máxima disponível atingida!");
+            return;
+        }
+
+        item.quantidade += 1;
+
+       // listaCarrinho[index].quantidade += 1;
+
+        calcularTotal();
+        atualizarCarrinho();
+        salvarCarrinho();
+    });
+    }
+
+    function diminuir(index) {
+        if (listaCarrinho[index].quantidade > 1) {
+            listaCarrinho[index].quantidade -= 1;
+        } else {
+            listaCarrinho.splice(index, 1);
+        }
         calcularTotal();
         atualizarCarrinho();
         salvarCarrinho();
     }
 
-    function diminuir(index) {
-        if (carrinho[index].quantidade > 1) {
-            carrinho[index].quantidade -= 1;
-        } else {
-            carrinho.splice(index, 1);
-        }
-        calcularTotal();
-        atualizarCarrinho();
-        salvarCarrinho
-    }
-
     function salvarCarrinho() {
-        localStorage.setItem("carrinho", JSON.stringify(carrinho));
+        localStorage.setItem("lista-carrinho", JSON.stringify(listaCarrinho));
     }
 
     function carregarCarrinhoSalvo() {
-        const dados = localStorage.getItem("carrinho");
+        const dados = localStorage.getItem("lista-carrinho");
         if (dados) {
-            carrinho = JSON.parse(dados);
-            calcularTotal();
-            atualizarCarrinho();
+            listaCarrinho = JSON.parse(dados);
+
+            listaCarrinho.forEach((item, index) => {
+
+                db.collection("produtos").doc(item.id).get().then((doc) => {
+                    if (doc.exists) {
+                        const produto = doc.data();
+                        listaCarrinho[index].estoque = produto.estoque; //atualiza o estoque do item no carrinho
+            
+                    calcularTotal();
+                    atualizarCarrinho();
+                    }
+                });
+            });
         }
     }
 
@@ -146,7 +178,7 @@ let total = 0;
     }
 
     function finalizarPedido() {
-        if (carrinho.length === 0) {
+        if (listaCarrinho.length === 0) {
         alert("Adicione itens ao carrinho!");
         return;
 }
@@ -169,8 +201,8 @@ let total = 0;
             return;
         }
 
-        carrinho.forEach((item) => {
-            mensagem += `- ${item.nome} x${item.quantidade} (R$ ${(item.preco * item.quantidade).toFixed(2)}\n`;
+        listaCarrinho.forEach((item) => {
+            mensagem += `- ${item.nome} x${item.quantidade} (R$ ${(item.preco * item.quantidade).toFixed(2)})\n`;
         });
 
         mensagem += "\n💰 Pagamento: " + pagamento;
@@ -192,14 +224,15 @@ let total = 0;
             celular: celular,
             endereco: endereco,
             pagamento: pagamento,
-            itens: carrinho,
+            itens: listaCarrinho,
             status: "Pendente",//novo campo para status do pedido
             criadoEm: new Date()
+
         }).then(() => {
             console.log("Pedido salvo no Firestore!");
 
             Promise.all(
-            carrinho.map((item) => {
+            listaCarrinho.map((item) => {
                 const ref = db.collection("produtos").doc(item.id);
 
                 return db.runTransaction(async (transaction) => {
@@ -216,7 +249,7 @@ let total = 0;
                     }
 
                     transaction.update(ref, {
-                        estoque: estoqueAtual - 1
+                        estoque: estoqueAtual - item.quantidade
                     });
                 });
             })
@@ -224,11 +257,11 @@ let total = 0;
             .then(() => {
                 window.open(url, "_blank");
 
-                carrinho = [];
+                listaCarrinho = [];
                 total = 0;
                 atualizarTotal();
                 atualizarCarrinho(); // importante para manter a ordem correta do estoque
-                localStorage.removeItem("carrinho");
+                localStorage.removeItem("lista-carrinho");
             })
             .then(() => {
                 console.log("Estoque atualizado com sucesso!");

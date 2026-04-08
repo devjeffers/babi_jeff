@@ -13,32 +13,45 @@
 
     <div id="produtos" class="grid"></div>
 
-    <div class="formulario">
-    <h2>📋🖋Finalizar Pedido</h2>
+    <div class="container-principal">
 
-    <input type="text" id="nome" placeholder="Digite seu nome"><br><br>
-    <input type="text" id="celular" placeholder="Digite seu celular"><br>
-    <input type="text" id="endereco" placeholder="Digite seu endereço"><br><br>
+<!-- Formulário de Finalização de Pedido -->
+    <div class="pedido-box">
+
+        <h2>📋🖋Finalizar Pedido</h2>
+
+    <div class="formulario">
+        <input type="text" id="nome" placeholder="Digite seu nome"><br>
+        <input type="text" id="celular" placeholder="Digite seu celular"><br>
+        <input type="text" id="endereco" placeholder="Digite seu endereço"><br><br>
     
-    <select id="pagamento">
+        <select id="pagamento">
         <option value="">Selecione a forma de pagamento</option>
         <option value="pix">PIX</option>
         <option value="dinheiro">Dinheiro</option>
     </select><br><br>
     </div>
+    </div>
     
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-    <script src="firebase.js"></script>
-
+    <div class="carrinho-box">
+<!-- Carrinho de Compras -->
     <h2>🛒 Carrinho</h2>
-    <div id="carrinho" class="carrinho"></div>
+
+    <div id="lista-carrinho" class="carrinho"></div>
 
     <h2 id="total" class="total">Total: R$ 0.00</h2>
 
-    <button onclick="finalizarPedido()">Finalizar Pedido</button>
+    <button class="btn-finalizar" onclick="finalizarPedido()">Finalizar Pedido</button>
+                
 
+        </div>
+
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="firebase.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
